@@ -13,7 +13,7 @@ extern void IntHashSet_insert(IntHashSet this, int i);
 extern bool IntHashSet_lookup(IntHashSet this, int i);
 extern void IntHashSet_union(IntHashSet this, const IntHashSet other);
 extern void IntHashSet_print(IntHashSet this);
-extern bool IntHashSet_count(IntHashSet this);
+extern int IntHashSet_count(IntHashSet this);
 extern bool IntHashSet_isEmpty(IntHashSet this);
 extern bool IntHashSet_equals(IntHashSet this, IntHashSet other);
 extern void IntHashSet_iterate(const IntHashSet this, void(*func)(int));

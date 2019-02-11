@@ -8,7 +8,7 @@
 int main()
 {
     printf("Begin test...\n");
-    /*DFA d1 = new_DFA(7);
+    DFA d1 = new_DFA(7);
     DFA_set_transition(d1, 0, 'c', 1);
     DFA_set_transition(d1, 1, 's', 2);
     DFA_set_transition(d1, 2, 'c', 3);
@@ -23,7 +23,8 @@ int main()
     }
     else {
         printf("Rejected Input\n");
-    }*/
+    }
+    /*
     NFA n1 = new_NFA(5);
     NFA_add_transition_all(n1, 0, 0);
     printf("done with first transition\n");
@@ -41,5 +42,5 @@ int main()
     }
     else{
         printf("Rejected Input\n");
-    }
+    }*/
 }

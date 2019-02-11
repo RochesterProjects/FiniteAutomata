@@ -26,7 +26,7 @@ DFA new_DFA(int nStates) {
     dfa->acceptingStates = new_LinkedList();
     //to allocate transition table
     int** matrix = dfa->transitionTable;
-    int *pointer;
+    int **pointer;
     int length = 0;
     length = sizeof(int *) * nStates + sizeof(int) * 128 * nStates;
     matrix = (int **)malloc(length);

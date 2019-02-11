@@ -177,7 +177,7 @@ void IntHashSet_print(IntHashSet this) {
 /**
  * Return the number of elements (ints) in the given IntHashSet.
  */
-bool IntHashSet_count(IntHashSet this) {
+int IntHashSet_count(IntHashSet this) {
 	// Cached count saves scanning the entire hashtable every time
 	return this->count;
 }
@@ -394,4 +394,3 @@ int main(int argc, char* argv[]) {
 }
 
 #endif
-

@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include <assert.h>
+#include <string.h>
 
 #include "nfa.h"
 
@@ -26,58 +27,34 @@
  */
 
 typedef struct NFA{
-
     int numStates;
-
     IntHashSet** transitionTable;
-
     LinkedList acceptingStates;
-
-    
-
 } *NFA;
 
 
 /**
-
  * Allocate and return a new NFA containing the given number of states.
-
  */
 
 NFA new_NFA(int nStates){
-
     NFA nfa;
-
     nfa = (NFA)malloc(sizeof(NFA));
-
     if (nfa == NULL) {
-
         return NULL; // Out of memory...
-
     }
-
     nfa->numStates = nStates;
-
     nfa->acceptingStates = new_LinkedList();
-
-    
-
     //to allocate transition table
 
     IntHashSet** matrix = nfa->transitionTable;
 
     matrix = malloc(nStates * 129 * sizeof(**matrix));
-
+//create an empty set at each point in the table
     for(int i = 0; i < nStates; i++){
-
         for(int j = 0; j < 128; j++){
-
              *((IntHashSet *)matrix + i * 128 + j) = new_IntHashSet(nStates);
-
-            
-
         }
-
     }
 
     nfa->transitionTable = matrix;
@@ -95,20 +72,13 @@ NFA new_NFA(int nStates){
 
 void NFA_free(NFA nfa){
 
-    if (&nfa == NULL) {
+    if (nfa == NULL) {
 
         return;
 
     }
 
     else {
-
-        free(nfa->numStates);
-
-        free(nfa->transitionTable);
-
-        free(nfa->acceptingStates);
-
         free(nfa);
 
     }
@@ -184,7 +154,7 @@ void NFA_add_transition(NFA nfa, int src, char sym, int dst){
 
 void NFA_add_transition_str(NFA nfa, int src, char *str, int dst){
 
-    int **matrix = nfa->transitionTable;
+  //  IntHashSet **matrix = nfa->transitionTable;
 
     
 
@@ -231,16 +201,17 @@ void NFA_add_transition_all(NFA nfa, int src, int dst){
 void NFA_set_accepting(NFA nfa, int state, bool value){
 
     LinkedList list = nfa->acceptingStates;
+    int* pointer = &state;
 
     if (value) {
 
-        LinkedList_add_at_end(list, state);
+        LinkedList_add_at_end(list, pointer);
 
     }
 
     else {
 
-        LinkedList_remove(list, state);
+        LinkedList_remove(list, pointer);
 
     }
 
@@ -256,10 +227,10 @@ void NFA_set_accepting(NFA nfa, int state, bool value){
  */
 
 bool NFA_get_accepting(NFA nfa, int state){
-
+    int* pointer = &state;
     LinkedList list = nfa->acceptingStates;
 
-    return LinkedList_contains(list, state);
+    return LinkedList_contains(list, pointer);
 
 }
 
@@ -357,3 +328,5 @@ void NFA_print(NFA nfa){
     int states = nfa->numStates;
 
     printf("This Non-Deterministic Finite Automaton has %d total states.", states);
+}
+

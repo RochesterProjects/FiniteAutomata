@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <string.h>
 #include "dfa.h"
 #include "LinkedList.h"
 
@@ -26,16 +27,13 @@ DFA new_DFA(int nStates) {
     dfa->acceptingStates = new_LinkedList();
     //to allocate transition table
     int** matrix = dfa->transitionTable;
-    int **pointer;
-    int length = 0;
-    length = sizeof(int *) * nStates + sizeof(int) * 128 * nStates;
-    matrix = (int **)malloc(length);
-    // ptr is now pointing to the first element in of 2D array
-    pointer = matrix + nStates;
+    matrix = malloc(nStates * 129 * sizeof(**matrix));
     // for loop to point rows pointer to appropriate location in 2D array
-    for(int i = 0; i < nStates; i++){
-        matrix[i] = (pointer + 128 * i);
-    }
+   /* for(int i = 0; i < nStates; i++){
+	for(int j = 0; j <128; j++){
+          *((int*)matrix + i * 128 + j);
+	}
+    }*/
     dfa->transitionTable = matrix;
     return dfa;
 }
@@ -47,13 +45,10 @@ DFA new_DFA(int nStates) {
  * Free the given DFA.
  */
 void DFA_free(DFA dfa) {
-    if (&dfa == NULL) {
+    if (dfa == NULL) {
         return;
     }
     else {
-        free(dfa->numStates);
-        free(dfa->transitionTable);
-        free(dfa->acceptingStates);
         free(dfa);
     }
 }
@@ -77,7 +72,7 @@ int DFA_get_transition(DFA dfa, int src, char sym){
     }
     int charValue = (int)sym; //get ASCII code
     int **matrix = dfa->transitionTable;
-    return matrix[src][charValue];
+    return *((int*)matrix + src * 128 + charValue);
 }
 
 
@@ -90,7 +85,7 @@ int DFA_get_transition(DFA dfa, int src, char sym){
 void DFA_set_transition(DFA dfa, int src, char sym, int dst) {
     int charValue = (int)sym; //get ASCII code
     int **matrix = dfa->transitionTable;
-    matrix[src][charValue] = dst; //pointer arithmetic to set value in 2d array
+    *((int*)matrix + src * 128 + charValue) = dst; //pointer arithmetic to set value in 2d array
     dfa->transitionTable = matrix;
 }
 
@@ -107,8 +102,9 @@ void DFA_set_transition_str(DFA dfa, int src, char *str, int dst) {
     for (int i = 0; i < length; i++) {
         char currentChar = *strArr[i];
         int charValue = currentChar;
-        matrix[src][currentChar] = dst; //pointer arithmetic to set value in 2d array
+        *((int*)matrix + src * 128 + charValue) = dst; //pointer arithmetic to set value in 2d array
     }
+	dfa->transitionTable = matrix;
 }
 
 
@@ -120,8 +116,9 @@ void DFA_set_transition_str(DFA dfa, int src, char *str, int dst) {
 void DFA_set_transition_all(DFA dfa, int src, int dst) {
     int **matrix = dfa->transitionTable;
     for (int i = 0; i < 128; i++) { //i will be every ASCII code allowed by specs.
-        matrix[src][i]= dst; //pointer arithmetic to set value in 2d array
+        *((int*)matrix + src * 128 + i) = dst; //pointer arithmetic to set value in 2d array
     }
+	dfa->transitionTable = matrix;
 }
 
 
@@ -132,11 +129,12 @@ void DFA_set_transition_all(DFA dfa, int src, int dst) {
 
 void DFA_set_accepting(DFA dfa, int state, bool value) {
     LinkedList list = dfa->acceptingStates;
+    int* pointer = &state;
     if (value) {
-        LinkedList_add_at_end(list, state);
+        LinkedList_add_at_end(list, pointer);
     }
     else {
-        LinkedList_remove(list, state);
+        LinkedList_remove(list, pointer);
     }
     dfa->acceptingStates = list;
 }
@@ -148,7 +146,8 @@ void DFA_set_accepting(DFA dfa, int state, bool value) {
 
 bool DFA_get_accepting(DFA dfa, int state) {
     LinkedList list = dfa->acceptingStates;
-    return LinkedList_contains(list, state);
+   int* pointer = &state;
+    return LinkedList_contains(list, pointer);
 }
 
 

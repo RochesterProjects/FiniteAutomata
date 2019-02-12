@@ -129,12 +129,12 @@ void DFA_set_transition_all(DFA dfa, int src, int dst) {
 
 void DFA_set_accepting(DFA dfa, int state, bool value) {
     LinkedList list = dfa->acceptingStates;
-    int* pointer = &state;
+   // int* pointer = &state;
     if (value) {
-        LinkedList_add_at_end(list, pointer);
+        LinkedList_add_at_end(list, state);
     }
     else {
-        LinkedList_remove(list, pointer);
+        LinkedList_remove(list, state);
     }
     dfa->acceptingStates = list;
 }
@@ -146,8 +146,8 @@ void DFA_set_accepting(DFA dfa, int state, bool value) {
 
 bool DFA_get_accepting(DFA dfa, int state) {
     LinkedList list = dfa->acceptingStates;
-   int* pointer = &state;
-    return LinkedList_contains(list, pointer);
+   //int* pointer = &state;
+    return LinkedList_contains(list, state);
 }
 
 

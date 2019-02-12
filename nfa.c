@@ -201,17 +201,17 @@ void NFA_add_transition_all(NFA nfa, int src, int dst){
 void NFA_set_accepting(NFA nfa, int state, bool value){
 
     LinkedList list = nfa->acceptingStates;
-    int* pointer = &state;
+    //int* pointer = &state;
 
     if (value) {
 
-        LinkedList_add_at_end(list, pointer);
+        LinkedList_add_at_end(list, state);
 
     }
 
     else {
 
-        LinkedList_remove(list, pointer);
+        LinkedList_remove(list, state);
 
     }
 
@@ -227,14 +227,25 @@ void NFA_set_accepting(NFA nfa, int state, bool value){
  */
 
 bool NFA_get_accepting(NFA nfa, int state){
-    int* pointer = &state;
+    //int* pointer = &state;
     LinkedList list = nfa->acceptingStates;
 
-    return LinkedList_contains(list, pointer);
+    return LinkedList_contains(list, state);
 
 }
 
-
+int getMax(IntHashSet set){
+	int max = 0;
+	IntHashSetIterator iterator = IntHashSet_iterator(set);
+            while(IntHashSetIterator_hasNext(iterator)){
+                int nextState = IntHashSetIterator_next(iterator);
+                if(nextState> max){
+                	max = nextState;
+                }
+            }
+	return max;
+}
+	
 
 /**
 
@@ -251,19 +262,17 @@ bool NFA_execute(NFA nfa, char *input){
     printf("We are checking if the string %s is good\n",input);
 
     IntHashSet statesPassed = new_IntHashSet(NFA_get_size(nfa));
-
+int lastElementReached = 0;
     int state = 0;
 
-    for(int i=0;i<n;i++)
-
-    { 
-        IntHashSet currentSet = NFA_get_transitions(nfa, state, input[i]);
-
+    for(int i=0;i<n;i++){ 
+        IntHashSet currentSet = NFA_get_transitions(nfa, lastElementReached, input[i]);
         if(IntHashSet_count(currentSet) == 1){
 
             IntHashSet_union(statesPassed, currentSet);
+            lastElementReached = getMax(currentSet);
 
-            state++;
+            
 
         }
 
@@ -278,16 +287,13 @@ bool NFA_execute(NFA nfa, char *input){
                 IntHashSet set = NFA_get_transitions(nfa, nextState, input[i]);
 
                 IntHashSet_union(statesPassed, set);
+                if(getMax(set) > lastElementReached){
+                	lastElementReached = getMax(set);
 
                 
 
             }
-
-            state++;
-
-        }else if((IntHashSet_count(currentSet) == 0) && i + 1 !=n){
-
-            
+	}
 
         }
 
@@ -297,7 +303,7 @@ bool NFA_execute(NFA nfa, char *input){
 
     IntHashSetIterator iterator = IntHashSet_iterator(statesPassed);
 
-    while(IntHashSetIterator_hasNext(iterator)){
+   /* while(IntHashSetIterator_hasNext(iterator)){
 
         if(NFA_get_accepting(nfa,IntHashSetIterator_next(iterator))){
 
@@ -311,7 +317,9 @@ bool NFA_execute(NFA nfa, char *input){
 
     free(iterator);
 
-    return false;
+    return false;*/
+
+    return NFA_get_accepting(nfa, lastElementReached);
 
 }
 

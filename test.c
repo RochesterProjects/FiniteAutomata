@@ -24,23 +24,23 @@ int main()
     else {
         printf("Rejected Input\n");
     }
-    /*
+    
     NFA n1 = new_NFA(5);
     NFA_add_transition_all(n1, 0, 0);
-    printf("done with first transition\n");
     NFA_add_transition(n1, 0, 'c', 1);
-    printf("done with second\n");
+    //printf("done with second\n");
     NFA_add_transition(n1, 1, 'o', 2);
     NFA_add_transition(n1, 2, 'd', 3);
     NFA_add_transition(n1, 3, 'e', 4);
     //printf("added all the transitions\n");
     NFA_set_accepting(n1, 4, true);
-    char *input = {"encode"};
-    int didAccept = DFA_execute(n1, input);
-    if ((didAccept == 1)){
+    char *input2 = {"code"};
+    int didAccept2 = NFA_execute(n1, input2);
+    if ((didAccept2 == 1)){
         printf("Accepted Input\n");
     }
     else{
         printf("Rejected Input\n");
-    }*/
+    }
+return 0;
 }

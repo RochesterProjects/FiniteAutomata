@@ -153,11 +153,17 @@ void NFA_add_transition(NFA nfa, int src, char sym, int dst){
  */
 
 void NFA_add_transition_str(NFA nfa, int src, char *str, int dst){
+	IntHashSet **matrix = nfa->transitionTable;
+	 int n= strlen(str);
+	for(int i = 0; i < n; i++){
+		int currentChar = str[i];
+		 IntHashSet set = *((IntHashSet *)matrix + src * 128 + currentChar);
 
-  //  IntHashSet **matrix = nfa->transitionTable;
+   		 IntHashSet_insert(set, dst);
 
-    
-
+    		*((IntHashSet *)matrix + src * 128 + currentChar) = set;
+		
+	
     
 
     
@@ -192,6 +198,7 @@ void NFA_add_transition_all(NFA nfa, int src, int dst){
 
 
 
+
 /**
 
  * Set whether the given NFA's state is accepting or not.
@@ -206,6 +213,7 @@ void NFA_set_accepting(NFA nfa, int state, bool value){
     if (value) {
 
         LinkedList_add_at_end(list, state);
+	printf("Just set %d as an accepting state!\n", state);
 
     }
 
@@ -216,6 +224,7 @@ void NFA_set_accepting(NFA nfa, int state, bool value){
     }
 
     nfa->acceptingStates = list;
+	
 
 }
 
@@ -260,17 +269,15 @@ bool NFA_execute(NFA nfa, char *input){
     int n= strlen(input);
 
     printf("We are checking if the string %s is good\n",input);
-
-    IntHashSet statesPassed = new_IntHashSet(NFA_get_size(nfa));
-int lastElementReached = 0;
+    int lastElementReached = 0;
     int state = 0;
 
     for(int i=0;i<n;i++){ 
         IntHashSet currentSet = NFA_get_transitions(nfa, lastElementReached, input[i]);
         if(IntHashSet_count(currentSet) == 1){
-
-            IntHashSet_union(statesPassed, currentSet);
             lastElementReached = getMax(currentSet);
+	printf("This is the last element reached now: %d\n", lastElementReached);
+		//state = lastElementReached;
 
             
 
@@ -283,41 +290,28 @@ int lastElementReached = 0;
             while(IntHashSetIterator_hasNext(iterator)){
 
                 int nextState = IntHashSetIterator_next(iterator);
-
                 IntHashSet set = NFA_get_transitions(nfa, nextState, input[i]);
-
-                IntHashSet_union(statesPassed, set);
                 if(getMax(set) > lastElementReached){
                 	lastElementReached = getMax(set);
-
-                
-
-            }
-	}
-
+				printf("This is the last element reached now: %d\n", lastElementReached);
+				//state = lastElementReached;
+            	}
+	}		
+			
         }
+		if(IntHashSet_count(currentSet) == 0){
+			if(i == (n-1)){
+		  		return false;
+			} 
+			lastElementReached = 0;
+			printf("This is the last element reached now: %d\n", lastElementReached);
+				
+	}
 
         
 
     }
-
-    IntHashSetIterator iterator = IntHashSet_iterator(statesPassed);
-
-   /* while(IntHashSetIterator_hasNext(iterator)){
-
-        if(NFA_get_accepting(nfa,IntHashSetIterator_next(iterator))){
-
-            free(iterator);
-
-            return true;
-
-        }
-
-    }
-
-    free(iterator);
-
-    return false;*/
+	printf("This is the last element reached now: %d\n", lastElementReached);
 
     return NFA_get_accepting(nfa, lastElementReached);
 
@@ -337,4 +331,271 @@ void NFA_print(NFA nfa){
 
     printf("This Non-Deterministic Finite Automaton has %d total states.", states);
 }
+
+NFA NFA_ends_in_code()
+
+{
+
+    printf("Testing NFA that recognizes any string ending in \"code\". \n");
+
+    NFA n1 = new_NFA(5);
+
+    NFA_add_transition_all(n1, 0, 0);
+
+    NFA_add_transition(n1, 0, 'c', 1);
+
+    NFA_add_transition(n1, 1, 'o', 2);
+
+    NFA_add_transition(n1, 2, 'd', 3);
+
+    NFA_add_transition(n1, 3, 'e', 4);
+
+    NFA_set_accepting(n1, 4, true);
+
+    return n1;
+
+}
+
+
+NFA NFA_contains_code()
+
+{
+
+    printf("Testing NFA that recognizes any string containing \"code\". \n");
+
+    NFA n1 = new_NFA(5);
+
+    NFA_add_transition_all(n1, 0, 0);
+
+    NFA_add_transition(n1, 0, 'c', 1);
+
+    NFA_add_transition(n1, 1, 'o', 2);
+
+    NFA_add_transition(n1, 2, 'd', 3);
+
+    NFA_add_transition(n1, 3, 'e', 4);
+
+    NFA_add_transition_all(n1, 4, 4);
+
+    NFA_set_accepting(n1, 4, true);
+
+    return n1;
+
+}
+
+
+NFA NFA_washington()
+
+{
+
+    printf("Testing NFA that recognizes a string with more than one a, g, h, i, o, s, t, or w, or more than two n’s. \n");
+
+    NFA n1 = new_NFA(20);
+
+    NFA_add_transition_all(n1,0,0);
+
+    NFA_add_transition(n1, 0, 'a', 1);
+
+    NFA_add_transition_all(n1, 1, 1);
+
+    NFA_add_transition(n1, 1, 'a', 2);
+
+    NFA_set_accepting(n1, 2, true);
+
+    
+
+    NFA_add_transition(n1, 0, 'g', 3);
+    NFA_add_transition_all(n1,3,3);
+
+    NFA_add_transition(n1, 3, 'g', 4);
+
+    NFA_set_accepting(n1, 4, true);
+
+    
+
+    NFA_add_transition(n1, 0, 'h', 5);
+
+    NFA_add_transition_all(n1, 5, 5);
+
+    NFA_add_transition(n1, 5, 'h', 6);
+
+    NFA_set_accepting(n1, 6, true);
+
+    
+
+    NFA_add_transition(n1, 0, 'i', 7);
+
+    NFA_add_transition_all(n1, 7, 7);
+
+    NFA_add_transition(n1, 7, 'i', 8);
+
+    NFA_set_accepting(n1, 8, true);
+
+    
+
+    NFA_add_transition(n1, 0, 'n', 9);
+
+    NFA_add_transition_all(n1, 9, 9);
+
+    NFA_add_transition(n1, 9, 'n', 10);
+
+    NFA_add_transition_all(n1, 10, 10);
+
+    NFA_add_transition(n1, 10, 'n', 11);
+
+    NFA_set_accepting(n1, 11, true);
+
+    
+
+    NFA_add_transition(n1, 0, 'o', 12);
+
+    NFA_add_transition_all(n1, 12, 12);
+
+    NFA_add_transition(n1, 12, 'o', 13);
+
+    NFA_set_accepting(n1, 13, true);
+
+    
+
+    NFA_add_transition(n1, 0, 's', 14);
+
+    NFA_add_transition_all(n1, 14, 14);
+
+    NFA_add_transition(n1, 14, 's', 15);
+
+    NFA_set_accepting(n1, 15, true);
+
+    
+
+    NFA_add_transition(n1, 0, 't', 16);
+
+    NFA_add_transition_all(n1, 16, 16);
+
+    NFA_add_transition(n1, 16, 't', 17);
+
+    NFA_set_accepting(n1, 17, true);
+
+    
+
+    NFA_add_transition(n1, 0, 'w', 18);
+
+    NFA_add_transition_all(n1, 18, 18);
+
+    NFA_add_transition(n1, 18, 'w', 19);
+
+    NFA_set_accepting(n1, 19, true);
+
+    
+
+    return n1;
+
+}
+
+
+//Note:  We did not include "y" as a vowel
+
+NFA NFA_vowels()
+
+{
+
+    printf("Testing NFA that recognizes any string containing any vowels(not including \"y\"). \n");
+
+    NFA n1 = new_NFA(6);
+
+    NFA_add_transition_all(n1, 0, 0);
+
+    NFA_add_transition_all(n1, 1, 1);
+
+    NFA_add_transition_all(n1, 2, 2);
+
+    NFA_add_transition_all(n1, 3, 3);
+
+    NFA_add_transition_all(n1, 4, 4);
+
+    NFA_add_transition_all(n1, 5, 5);
+
+    
+
+    NFA_add_transition(n1, 0, 'a', 1);
+
+    NFA_add_transition(n1, 0, 'e', 2);
+
+    NFA_add_transition(n1, 0, 'i', 3);
+
+    NFA_add_transition(n1, 0, 'o', 4);
+
+    NFA_add_transition(n1, 0, 'u', 5);
+
+    
+
+    NFA_set_accepting(n1, 1, true);
+
+    NFA_set_accepting(n1, 2, true);
+
+    NFA_set_accepting(n1, 3, true);
+
+    NFA_set_accepting(n1, 4, true);
+
+    NFA_set_accepting(n1, 5, true);
+
+    return n1;
+
+}
+
+
+
+void NFA_REPL(NFA nfa)
+
+{
+
+    bool quit = false;
+
+    char* input = (char*) malloc(20*sizeof(char));
+
+    while(!quit)
+
+    {
+
+        printf("Enter an input (\"quit\" to quit): \n");
+
+        
+
+        scanf("%s", input);
+
+        if(strncmp(input, "quit", 4) == 0)
+
+        {
+
+            quit = true;
+
+        }
+
+        else{
+
+            int didAccept = NFA_execute(nfa, input);
+
+            int checkEmpty = strncmp(input, "", 4);
+
+            if (checkEmpty != 0 && didAccept == 1) {
+
+                printf("Result for input \"%s\": true \n", input);
+
+            }
+
+            else {
+
+                printf("Result for input \"%s\": false \n", input);
+
+            }
+
+        }
+
+    }
+
+    free(input);
+
+    NFA_free(nfa);
+
+}
+
 

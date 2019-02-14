@@ -81,4 +81,21 @@ extern bool DFA_execute(DFA dfa, char *input);
  */
 extern void DFA_print(DFA dfa);
 
+extern DFA DFA_csc173(void);
+
+
+extern DFA DFA_cat(void);
+
+
+extern DFA DFA_even0s(void);
+
+
+extern DFA DFA_even0s_and1s(void);
+
+
+extern DFA DFA_miller_or_shoham(void);
+
+
+extern void DFA_REPL(DFA dfa);
+
 #endif

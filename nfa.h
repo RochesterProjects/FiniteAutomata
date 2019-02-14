@@ -77,4 +77,19 @@ extern bool NFA_execute(NFA nfa, char *input);
  */
 extern void NFA_print(NFA nfa);
 
+extern NFA NFA_ends_in_code(void);
+
+
+extern NFA NFA_contains_code(void);
+
+
+extern NFA NFA_washington(void);
+
+
+extern NFA NFA_vowels(void);
+
+
+extern void NFA_REPL(NFA nfa);
+
+
 #endif

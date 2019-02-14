@@ -172,3 +172,217 @@ void DFA_print(DFA dfa) {
     int states = dfa->numStates;
     printf("This Deterministic Finite Automaton has %d total states.", states);
     }
+DFA DFA_csc173()
+
+{
+
+    printf("Testing DFA that recognizes exactly \"csc173\". \n");
+
+    DFA d1 = new_DFA(7);
+
+    DFA_set_transition(d1, 0, 'c', 1);
+
+    DFA_set_transition(d1, 1, 's', 2);
+
+    DFA_set_transition(d1, 2, 'c', 3);
+
+    DFA_set_transition(d1, 3, '1', 4);
+
+    DFA_set_transition(d1, 4, '7', 5);
+
+    DFA_set_transition(d1, 5, '3', 6);
+
+    DFA_set_accepting(d1, 6, true);
+
+    return d1;
+
+}
+
+
+DFA DFA_cat()
+
+{
+
+    printf("Testing DFA that recognizes any string that starts with \"cat\". \n");
+
+    DFA d1 = new_DFA(4);
+
+    DFA_set_transition(d1, 0, 'c', 1);
+
+    DFA_set_transition(d1, 1, 'a', 2);
+
+    DFA_set_transition(d1, 2, 't', 3);
+
+    DFA_set_transition_all(d1, 3 , 3);
+
+    DFA_set_accepting(d1, 3, true);
+
+    return d1;
+
+}
+
+
+DFA DFA_even0s()
+
+{
+
+    printf("Testing DFA that recognizes a binary input with an even number of 0s. \n");
+
+    DFA d1 = new_DFA(3);
+
+    DFA_set_transition(d1, 0, '0', 1);
+
+    DFA_set_transition(d1, 0, '1', 0);
+
+    DFA_set_transition(d1, 1, '1', 1);
+
+    DFA_set_transition(d1, 1, '0', 2);
+
+    DFA_set_transition(d1, 2, '0', 1);
+
+    DFA_set_transition(d1, 2, '1', 2);
+
+    DFA_set_accepting(d1, 2, true);
+
+    return d1;
+
+}
+
+
+DFA DFA_even0s_and1s()
+
+{
+
+    printf("Testing DFA that recognizes a binary input with an even number of 0s and 1s. \n");
+
+    DFA d1 = new_DFA(4);
+
+    DFA_set_transition(d1, 0, '0', 1);
+
+    DFA_set_transition(d1, 1, '0', 0);
+
+    
+
+    DFA_set_transition(d1, 1, '1', 2);
+
+    DFA_set_transition(d1, 2, '1', 1);
+
+    
+
+    DFA_set_transition(d1, 2, '0', 3);
+
+    DFA_set_transition(d1, 3, '0', 2);
+
+    
+
+    DFA_set_transition(d1, 3, '1', 0);
+
+    DFA_set_transition(d1, 0, '1', 3);
+
+    
+
+    DFA_set_accepting(d1, 0, true);
+
+    return d1;
+
+}
+
+
+DFA DFA_miller_or_shoham()
+
+{
+
+    printf("Testing DFA that recognizes either \"miller\" or \"shoham\". \n");
+
+    DFA d1 = new_DFA(13);
+
+    DFA_set_transition(d1, 0, 'm', 1);
+
+    DFA_set_transition(d1, 1, 'i', 2);
+
+    DFA_set_transition(d1, 2, 'l', 3);
+
+    DFA_set_transition(d1, 3, 'l', 4);
+
+    DFA_set_transition(d1, 4, 'e', 5);
+
+    DFA_set_transition(d1, 5, 'r', 6);
+
+    DFA_set_accepting(d1, 6, true);
+
+    
+
+    DFA_set_transition(d1, 0, 's', 7);
+
+    DFA_set_transition(d1, 7, 'h', 8);
+
+    DFA_set_transition(d1, 8, 'o', 9);
+
+    DFA_set_transition(d1, 9, 'h', 10);
+
+    DFA_set_transition(d1, 10, 'a', 11);
+
+    DFA_set_transition(d1, 11, 'm', 12);
+
+    DFA_set_accepting(d1, 12, true);
+
+    
+
+    return d1;
+
+}
+
+
+void DFA_REPL(DFA dfa)
+
+{
+
+    bool quit = false;
+
+    char* input = (char*) malloc(20*sizeof(char));
+
+    while(!quit)
+
+    {
+
+        printf("Enter an input (\"quit\" to quit): \n");
+
+        
+
+        scanf("%s", input);
+
+        if(strncmp(input, "quit", 4) == 0)
+
+        {
+
+            quit = true;
+
+        }
+
+        else{
+
+            int didAccept = DFA_execute(dfa, input);
+
+            int checkEmpty = strncmp(input, "", 4);
+
+            if (checkEmpty != 0 && didAccept == 1) {
+
+                printf("Result for input \"%s\": true \n", input);
+
+            }
+
+            else {
+
+                printf("Result for input \"%s\": false \n", input);
+
+            }
+
+        }
+
+    }
+
+    free(input);
+
+    DFA_free(dfa);
+
+}

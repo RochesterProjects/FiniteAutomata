@@ -162,7 +162,7 @@ void NFA_add_transition_str(NFA nfa, int src, char *str, int dst){
    		 IntHashSet_insert(set, dst);
 
     		*((IntHashSet *)matrix + src * 128 + currentChar) = set;
-		
+	}
 	
     
 
